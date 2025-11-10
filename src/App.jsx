@@ -8,7 +8,7 @@ import AppFooter from "./components/AppFooter";
 export function PrivateRoute({ children }) {
   const { user } = useAuth();
   console.log("Verificando usuario en PrivateRoute:", user);
-  return user ? children : <Navigate to="/login" />;
+  return user ? children : <Navigate to="/inicio-sesion" />;
 }
 
 export default function App() {
@@ -17,7 +17,7 @@ export default function App() {
       <Router>
         <Routes>
 
-          <Route path="/login" element={<Login />} />
+          <Route path="/inicio-sesion" element={<Login />} />
           <Route
             path="/viajes"
             element={
@@ -27,7 +27,7 @@ export default function App() {
               </PrivateRoute>
             }
             />
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/inicio-sesion" />} />
         </Routes>
       </Router>
             <AppFooter/>
