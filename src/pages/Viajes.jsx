@@ -11,11 +11,17 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { PiMicrosoftExcelLogoLight } from "react-icons/pi";
 
+ const getToday = () => {
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+    return today.toISOString().split("T")[0];
+  };
+
 export default function Viajes() {
   const [viajes, setViajes] = useState([]);
   const [loading, setLoading] = useState(true);
-  //por defecto que no seleccione ninguna fecha, es decir que marque viajes de todas las fechas
-  const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
+  //fecha hoy
+  const [fecha, setFecha] = useState(getToday());
   const [error, setError] = useState("");
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [users, setUsers] = useState([]);
@@ -44,6 +50,7 @@ export default function Viajes() {
     observaciones: "",
     cliente_nombre: "",
   });
+
 
   // asegurar auth
   useEffect(() => {
@@ -105,10 +112,16 @@ export default function Viajes() {
       if (selectedUsuario) params.set("usuario_id", selectedUsuario);
       if (selectedCliente) params.set("cliente_id", selectedCliente);
 
-      const url = rol === "admin"
-        ? `${import.meta.env.VITE_URL_API}/viajes?${params.toString()}`
-        : `${import.meta.env.VITE_URL_API}/viajes/chofer?fecha=${fecha}`;
+      let url;
 
+      if (rol === "admin") {
+        url = `${import.meta.env.VITE_URL_API}/viajes?${params.toString()}`;
+      } else {
+        const paramsChofer = new URLSearchParams();
+        if (fecha) paramsChofer.set("fecha", fecha);
+
+        url = `${import.meta.env.VITE_URL_API}/viajes/chofer?${paramsChofer.toString()}`;
+      }
       const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
@@ -347,12 +360,6 @@ export default function Viajes() {
         <Alert color="warning">{error}</Alert>
       ) : (
         <>
-          {/* Filters (admin) */}
-
-          {/* 
-          contenedor para crear viaje(chofer) o filtros(admin)
-
-          */}
           <div className="mb-4 flex justify-between items-end">
             {rol === "admin" && (
               <div className="flex gap-4 items-end ">
@@ -395,10 +402,21 @@ export default function Viajes() {
                 Crear Viaje
               </Button>
             )}
+            <button onClick={() => setFecha("")} className="text-sm text-blue-600 underline">
+              Ver todas las fechas
+            </button>
             <div className="">
               Fecha:
               <Label htmlFor="fecha" value="Seleccionar fecha:" />
-              <TextInput id="fecha" type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+              <TextInput 
+              id="fecha" 
+              type="date" 
+              value={fecha} 
+              onChange={(e) => setFecha(e.target.value)} 
+              onKeyDown={(e)=>{ 
+                if(e.key === "Backspace") setFecha("");
+              }}
+              />
             </div>
           </div>
           
@@ -499,7 +517,7 @@ export default function Viajes() {
               <div className="flex gap-4"><div className="font-semibold w-36">Cliente:</div><div>{selectedViaje.cliente_nombre}</div></div>
               <div className="flex gap-4"><div className="font-semibold w-36">Chofer:</div><div>{selectedViaje.usuario_nombre}</div></div>
               <div className="flex gap-4"><div className="font-semibold w-36">Fecha:</div>
-                <div>{selectedViaje.fecha_display || formatDisplayDate(selectedViaje.fecha)}</div></div>
+              <div>{selectedViaje.fecha_display || formatDisplayDate(selectedViaje.fecha)}</div></div>
               <div className="flex gap-4"><div className="font-semibold w-36">Matrícula:</div><div>{selectedViaje.matricula}</div></div>
               <div className="flex gap-4"><div className="font-semibold w-36">N° Orden:</div><div>{selectedViaje.n_orden}</div></div>
               <div className="flex gap-4"><div className="font-semibold w-36">Origen:</div><div>{selectedViaje.origen}</div></div>
