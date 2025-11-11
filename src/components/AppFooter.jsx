@@ -1,7 +1,7 @@
 export default function AppFooter() {
     return (
-            <footer className="bottom-0 mb-0 py-4 text-center text-sm text-gray-500">
-                © 2025 - Desarrolado por ChiliDev 🌶️
+            <footer className="fixed bottom-0 left-0 w-full py-3 text-center text-sm text-gray-500 bg-white">
+                © 2025 - Desarrollado por ChiliDev 🌶️
             </footer>
     );
 }
