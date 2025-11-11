@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { PiMicrosoftExcelLogoLight } from "react-icons/pi";
+import { FaRegCalendarTimes } from "react-icons/fa";
 
  const getToday = () => {
     const today = new Date();
@@ -402,21 +403,23 @@ export default function Viajes() {
                 Crear Viaje
               </Button>
             )}
-            <button onClick={() => setFecha("")} className="text-sm text-blue-600 underline">
-              Ver todas las fechas
-            </button>
-            <div className="">
-              Fecha:
-              <Label htmlFor="fecha" value="Seleccionar fecha:" />
-              <TextInput 
-              id="fecha" 
-              type="date" 
-              value={fecha} 
-              onChange={(e) => setFecha(e.target.value)} 
-              onKeyDown={(e)=>{ 
-                if(e.key === "Backspace") setFecha("");
-              }}
-              />
+            <div className="flex">
+              <Button onClick={() => setFecha("")} className="text-black-600 mr-2" title="Limpiar fecha">
+                <FaRegCalendarTimes size={22}/>
+              </Button>
+              <div>
+                Fecha:
+                <Label htmlFor="fecha" value="Seleccionar fecha:" />
+                <TextInput 
+                id="fecha" 
+                type="date" 
+                value={fecha} 
+                onChange={(e) => setFecha(e.target.value)} 
+                onKeyDown={(e)=>{ 
+                  if(e.key === "Backspace") setFecha("");
+                }}
+                />
+              </div>
             </div>
           </div>
           

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button, Card, Label, TextInput } from "flowbite-react";
-/* import { login } from "../context/AuthContext"; */
 
 export default function Login() {
   const { login } = useAuth();
@@ -22,19 +21,25 @@ export default function Login() {
       setError("Credenciales incorrectas");
     }
   };
-  return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <header className="w-full py-8 px-6">
-        <h1 className="text-2xl font-semibold text-green-800">Sistema Logístico</h1>
-        <p className="text-sm text-gray-500">by chili.dev</p>
+ return (
+    <div className="flex flex-col min-h-screen bg-white">
+      <header className="py-8 px-6">
+        <h1 className="text-2xl font-semibold text-green-800">MG Logística</h1>
+        <p className="text-sm text-gray-500">Gestión de viajes</p>
       </header>
 
-      <main className="flex-1 flex items-center justify-center px-6">
-        <Card className="w-full max-w-md rounded-xl border border-gray-50 shadow-sm" >{/* style={{ backgroundColor: "#0000003d" }} */}
-          <legend className="text-lg font-semibold mb-4 text-white">Inicia Sesión</legend>
+      <main className="flex flex-1 items-center justify-center px-4">
+        <Card
+          className="w-full max-w-md rounded-xl shadow-lg border border-gray-100"
+          style={{ backgroundColor: "#FAFAF5" }}
+        >
+          <legend className="text-lg font-semibold mb-4 text-green-800">
+            Inicia Sesión
+          </legend>
+
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <Label htmlFor="email" value="Correo electrónico" className="mb-2 " />
+              <Label htmlFor="email" value="Correo electrónico" />
               <TextInput
                 id="email"
                 type="email"
@@ -47,7 +52,7 @@ export default function Login() {
             </div>
 
             <div>
-              <Label htmlFor="password" value="Contraseña" className="mb-2" />
+              <Label htmlFor="password" value="Contraseña" />
               <TextInput
                 id="password"
                 type="password"
@@ -59,9 +64,11 @@ export default function Login() {
               />
             </div>
 
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
 
-            <Button type="submit" className="w-full rounded-full ">
+            <Button type="submit" className="w-full rounded-full bg-green-800 hover:bg-green-900">
               Iniciar Sesión
             </Button>
           </form>

@@ -2,3 +2,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+ :root{
+    height: min-screen;
+ }
+    body {
+       height: min-conte;
+       width: min-screen;
+    }
