@@ -23,9 +23,13 @@ export default function AppNavbar() {
           onClick={() => navigate("/")}
           className="self-center whitespace-nowrap text-xl text-white font-semibold cursor-pointer"
         >
-          Sistema Logístico
+           <h1 className="text-xl font-semibold text-white-800">MG Logística</h1>
+        <p className="text-sm text-gray-500">Gestión de viajes</p>
         </span>
       </NavbarBrand>
+      {/* <header className="py-8 px-6">
+       
+      </header> */}
 
       <div className="flex md:order-2">
         <Badge color="light" size="sm" className="mr-4 self-center">{rol}</Badge>

@@ -22,13 +22,13 @@ export default function Login() {
     }
   };
  return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="min-h-screen flex flex-col bg-white">
       <header className="py-8 px-6">
         <h1 className="text-2xl font-semibold text-green-800">MG Logística</h1>
         <p className="text-sm text-gray-500">Gestión de viajes</p>
       </header>
 
-      <main className="flex flex-1 items-center justify-center px-4">
+      <main className="flex-1 flex items-center justify-center px-4">
         <Card
           className="w-full max-w-md rounded-xl shadow-lg border border-gray-100"
           style={{ backgroundColor: "#FAFAF5" }}
