@@ -1,27 +1,31 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import { useAuth } from "../context/AuthContext";
 import { Button, Card, Label, TextInput } from "flowbite-react";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
-      await login(form.email, form.password); // Esperar a que se complete el login
-      console.log("ROL:", localStorage.getItem("rol"));
-      console.log("TOKEN:", localStorage.getItem("token"));
+      await login(email, password); // Esperar a que se complete el login
       navigate("/viajes"); // Luego redirigir
+
+      /* console.log("ROL:", localStorage.getItem("rol"));
+      console.log("TOKEN:", localStorage.getItem("token"));
+      console.log("USER:", localStorage.getItem("user")); */
+
     } catch (err) {
-      console.error(err);
-      setError("Credenciales incorrectas");
+      setError(err.message || "Error login");
     }
   };
- return (
+  return (
     <div className="min-h-screen flex flex-col bg-white">
       <header className="py-8 px-6">
         <h1 className="text-2xl font-semibold text-green-800">MG Logística</h1>
@@ -43,8 +47,8 @@ export default function Login() {
               <TextInput
                 id="email"
                 type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Correo electrónico"
                 required
                 className="rounded-full w-full !bg-white"
@@ -56,8 +60,8 @@ export default function Login() {
               <TextInput
                 id="password"
                 type="password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Contraseña"
                 required
                 className="rounded-full"

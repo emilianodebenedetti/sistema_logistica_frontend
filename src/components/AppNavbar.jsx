@@ -12,7 +12,7 @@ export default function AppNavbar() {
     localStorage.removeItem("rol");
     localStorage.removeItem("user");
     localStorage.removeItem("user_nombre");
-    navigate("/login");
+    navigate("/inicio-sesion");
   };
 
   return (
@@ -55,14 +55,14 @@ export default function AppNavbar() {
           >
             Viajes
           </Link>
-         {/*  {rol === "admin" && (
+          {rol === "admin" && (
             <>
               <Link
                 to="/usuarios"
                 className="block py-2 px-3 hover:underline"
                 style={{ color: "white", cursor: "pointer" }}
               >
-                Usuarios
+                Usuarios c
               </Link>
 
               <Link
@@ -73,7 +73,7 @@ export default function AppNavbar() {
                 Clientes
               </Link>
             </>
-          )} */}
+          )}
         </div>
       </NavbarCollapse>
     </Navbar>

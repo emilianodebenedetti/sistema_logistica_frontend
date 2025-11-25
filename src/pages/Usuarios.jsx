@@ -54,6 +54,7 @@ export default function Usuarios() {
       });
       if (!res.ok) {
         const txt = await res.text();
+        console.log(error);
         throw new Error(txt || "Error al crear usuario");
       }
       await fetchUsuarios();
