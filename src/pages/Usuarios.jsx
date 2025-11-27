@@ -9,7 +9,7 @@ export default function Usuarios() {
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  const [form, setForm] = useState({ nombre: "", email: "", password: "", rol: "chofer" });
+  const [form, setForm] = useState({ nombre: "", email: "", password: "", rol_id: null });
 
   const token = localStorage.getItem("token");
 
@@ -37,7 +37,7 @@ export default function Usuarios() {
   }, []);
 
   const handleCreateOpen = () => {
-    setForm({ nombre: "", email: "", password: "", rol: "chofer" });
+    setForm({ nombre: "", email: "", password: "", rol_id: null });
     setShowForm(true);
     setError("");
   };
@@ -54,7 +54,6 @@ export default function Usuarios() {
       });
       if (!res.ok) {
         const txt = await res.text();
-        console.log(error);
         throw new Error(txt || "Error al crear usuario");
       }
       await fetchUsuarios();
@@ -160,9 +159,10 @@ export default function Usuarios() {
               </div>
               <div>
                 <Label htmlFor="rol" value="Rol" />
-                <select id="rol" className="w-full rounded px-2 py-1" value={form.rol} onChange={(e) => setForm({ ...form, rol: e.target.value })}>
-                  <option value="chofer">chofer</option>
-                  <option value="admin">admin</option>
+                <select id="rol" className="w-full rounded px-2 py-1" value={form.rol_id} onChange={(e) => setForm({ ...form, rol_id: Number(e.target.value) })}>
+                  <option value="">Seleccionar rol</option>
+                  <option value={2}>chofer</option>
+                  <option value={1}>admin</option>
                 </select>
               </div>
 
