@@ -367,11 +367,11 @@ export default function Viajes() {
                 <div className="w-48">
                   Chofer:
                   <Label value="Usuario" />
-                  <select
-                    className="w-full rounded px-2 "
-                    value={selectedUsuario}
-                    onChange={(e) => setSelectedUsuario(e.target.value)}
-                  >
+                    <select
+                      className="w-full rounded px-2 "
+                      value={selectedUsuario}
+                      onChange={(e) => setSelectedUsuario(e.target.value)}
+                    >
                     <option value="">Todos</option>
                     {users.map((u) => (
                       <option key={u.id} value={u.id}>
@@ -555,7 +555,7 @@ export default function Viajes() {
           <div className="flex flex-col gap-3">
             <div>
               <Label htmlFor="n_orden" value="N° Orden" />
-              <TextInput id="n_orden" placeholder="N° Orden" value={form.n_orden} onChange={(e) => setForm({ ...form, n_orden: e.target.value })} />
+              <TextInput id="n_orden" placeholder="N° Orden (8 digitos)" value={form.n_orden} onChange={(e) => setForm({ ...form, n_orden: e.target.value })} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>

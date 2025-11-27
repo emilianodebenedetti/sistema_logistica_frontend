@@ -62,7 +62,7 @@ export default function AppNavbar() {
                 className="block py-2 px-3 hover:underline"
                 style={{ color: "white", cursor: "pointer" }}
               >
-                Usuarios c
+                Usuarios
               </Link>
 
               <Link
