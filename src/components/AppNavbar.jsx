@@ -16,14 +16,14 @@ export default function AppNavbar() {
   };
 
   return (
-    <Navbar fluid className="mb-6 shadow">
+    <Navbar fluid className=" mb-6 shadow" style={{ backgroundColor: '#FAFAF5' }}>
       <NavbarBrand>
         <span
           role="button"
           onClick={() => navigate("/")}
-          className="self-center whitespace-nowrap text-xl text-white font-semibold cursor-pointer"
+          className="self-center whitespace-nowrap text-xl font-semibold cursor-pointer"
         >
-           <h1 className="text-xl font-semibold text-white-800">MG Logística</h1>
+           <h1 className="text-xl font-semibold text-green-800">MG Logística</h1>
         <p className="text-sm text-gray-500">Gestión de viajes</p>
         </span>
       </NavbarBrand>
@@ -37,7 +37,7 @@ export default function AppNavbar() {
         <button
           onClick={handleLogout}
           title="Cerrar sesión"
-          className="flex items-center justify-center p-2 rounded hover:bg-gray-200/20 text-white"
+          className="flex items-center justify-center p-2 rounded hover:bg-gray-200/20 text-gray-500"
         >
           <RiLogoutBoxRLine size={20} />
         </button>
@@ -50,8 +50,8 @@ export default function AppNavbar() {
           {/* Viajes visible para todos */}
           <Link
             to="/viajes"
-            className="block py-2 px-3 hover:underline"
-            style={{ color: "white", cursor: "pointer" }}
+            className="block py-2 px-3 hover:underline text-black"
+            style={{ color: "text-gray-500", cursor: "pointer" }}
           >
             Viajes
           </Link>
@@ -60,7 +60,7 @@ export default function AppNavbar() {
               <Link
                 to="/usuarios"
                 className="block py-2 px-3 hover:underline"
-                style={{ color: "white", cursor: "pointer" }}
+                style={{ color: "text-gray-500", cursor: "pointer" }}
               >
                 Usuarios
               </Link>
@@ -68,7 +68,7 @@ export default function AppNavbar() {
               <Link
                 to="/clientes"
                 className="block py-2 px-3 hover:underline"
-                style={{ color: "white", cursor: "pointer" }}
+                style={{ color: "text-gray-500", cursor: "pointer" }}
               >
                 Clientes
               </Link>
