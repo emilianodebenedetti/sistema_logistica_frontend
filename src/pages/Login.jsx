@@ -81,7 +81,6 @@ export default function Login() {
             )}
 
             <Button type="submit" className="w-full rounded-full bg-green-800 hover:bg-green-900"  style={{ backgroundColor: "#41644A" }}>
-              
               Iniciar Sesión
             </Button>
           </form>

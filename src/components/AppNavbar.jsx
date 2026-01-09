@@ -16,33 +16,33 @@ export default function AppNavbar() {
   };
 
   return (
-    <Navbar fluid className=" mb-6 shadow" style={{ backgroundColor: '#FAFAF5' }}>
+    <Navbar fluid className=" mb-6 shadow" style={{ backgroundColor: '#EBE1D1' }}>
       <NavbarBrand>
         <span
           role="button"
           onClick={() => navigate("/")}
           className="self-center whitespace-nowrap text-xl font-semibold cursor-pointer"
         >
-           <h1 className="text-xl font-semibold text-green-800">MG Logística</h1>
+           <h1 className="text-xl font-bold " style={{ color: '#41644A' }}>MG Logística</h1>
         <p className="text-sm text-gray-500">Gestión de viajes</p>
         </span>
       </NavbarBrand>
-      {/* <header className="py-8 px-6">
-       
-      </header> */}
 
       <div className="flex md:order-2">
-        <Badge color="light" size="sm" className="mr-4 self-center">{rol}</Badge>
+        <Badge color="yellow" size="sm" className="mr-4 self-center">{rol}</Badge>
 
         <button
           onClick={handleLogout}
           title="Cerrar sesión"
-          className="flex items-center justify-center p-2 rounded hover:bg-gray-200/20 text-gray-500"
+          className="flex items-center justify-center p-2 rounded"
+          style={{ color: '#41644A' }}
         >
-          <RiLogoutBoxRLine size={20} />
+          <RiLogoutBoxRLine size={22} />
         </button>
 
-        <NavbarToggle />
+        <NavbarToggle
+          style={{ color: '#41644A' }}
+        />
       </div>
 
       <NavbarCollapse>
@@ -50,8 +50,8 @@ export default function AppNavbar() {
           {/* Viajes visible para todos */}
           <Link
             to="/viajes"
-            className="block py-2 px-3 hover:underline text-black"
-            style={{ color: "text-gray-500", cursor: "pointer" }}
+            className="block py-2 px-3 hover:underline text-black text-gray-500 "
+            
           >
             Viajes
           </Link>
@@ -59,16 +59,14 @@ export default function AppNavbar() {
             <>
               <Link
                 to="/usuarios"
-                className="block py-2 px-3 hover:underline"
-                style={{ color: "text-gray-500", cursor: "pointer" }}
+                className="block py-2 px-3 hover:underline text-gray-500"
               >
                 Usuarios
               </Link>
 
               <Link
                 to="/clientes"
-                className="block py-2 px-3 hover:underline"
-                style={{ color: "text-gray-500", cursor: "pointer" }}
+                className="block py-2 px-3 hover:underline text-gray-500" 
               >
                 Clientes
               </Link>
