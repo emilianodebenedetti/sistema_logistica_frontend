@@ -7,8 +7,9 @@ export default {
   ],
   theme: {
     extend: {
-       colors: {
-        green12: '#426B1F' // choose your hex
+      colors: {
+        darkGreen: '#426B1F',
+        beige: '#FAFAF5'
       }
     },
   },

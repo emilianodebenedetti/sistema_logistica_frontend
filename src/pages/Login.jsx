@@ -28,16 +28,22 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <header className="py-8 px-6">
-        <h1 className="text-2xl font-semibold text-green-800">MG Logística</h1>
+        <h1 className="text-2xl font-bold"
+          style={{ color: "#41644A" }}
+        >
+          MG Logística
+        </h1>
         <p className="text-sm text-gray-500">Gestión de viajes</p>
       </header>
 
       <main className="flex-1 flex items-center justify-center px-4">
         <Card
           className="w-full max-w-md rounded-xl shadow-lg border border-gray-100"
-          style={{ backgroundColor: "#FAFAF5" }}
+          style={{ backgroundColor: "#EBE1D1" }}
         >
-          <legend className="text-lg font-semibold mb-4 text-green-800">
+          <legend className="text-lg font-bold mb-4 "
+           style={{ color: "#41644A" }}
+          >
             Inicia Sesión
           </legend>
 
@@ -51,7 +57,8 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Correo electrónico"
                 required
-                className="rounded-full w-full !bg-white"
+                className="rounded-full w-full"
+                style={{ backgroundColor: "#ffffff", color: "#000000" }}
               />
             </div>
 
@@ -64,7 +71,8 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Contraseña"
                 required
-                className="rounded-full"
+                className="rounded-full w-full"
+                style={{ backgroundColor: "#ffffff", color: "#000000" }}
               />
             </div>
 
@@ -72,7 +80,8 @@ export default function Login() {
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}
 
-            <Button type="submit" className="w-full rounded-full bg-green-800 hover:bg-green-900">
+            <Button type="submit" className="w-full rounded-full bg-green-800 hover:bg-green-900"  style={{ backgroundColor: "#41644A" }}>
+              
               Iniciar Sesión
             </Button>
           </form>

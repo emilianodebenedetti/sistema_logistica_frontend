@@ -3,10 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
- :root{
-    height: min-screen;
- }
-    body {
-       height: min-conte;
-       width: min-screen;
-    }
+
+:root{
+  height: min-height;
+}
+
+body {
+  min-height: 100vh;
+  width: 100vw;
+}
