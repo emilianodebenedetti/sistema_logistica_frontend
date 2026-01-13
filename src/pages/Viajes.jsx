@@ -135,7 +135,7 @@ export default function Viajes() {
     }
   };
 
-  // exportar resultados actuales a Excel
+  // resuexportar ltados actuales a Excel
   const handleExport = async () => {
     if (!viajes || viajes.length === 0) return;
     setExportLoading(true);
@@ -619,7 +619,8 @@ export default function Viajes() {
       {rol === "admin" && (
         <div className="flex justify-center mt-4">
           <Button
-            color="green"
+          
+            style={{ backgroundColor: "#0D4715" }}
             onClick={handleExport}
             disabled={exportLoading || !viajes || viajes.length === 0}
           >

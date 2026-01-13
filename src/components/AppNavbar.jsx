@@ -23,7 +23,7 @@ export default function AppNavbar() {
           onClick={() => navigate("/")}
           className="self-center whitespace-nowrap text-xl font-semibold cursor-pointer"
         >
-           <h1 className="text-xl font-bold " style={{ color: '#41644A' }}>MG Logística</h1>
+           <h1 className="text-xl font-bold " style={{ color: '#0D4715' }}>MG Logística</h1>
         <p className="text-sm text-gray-500">Gestión de viajes</p>
         </span>
       </NavbarBrand>
@@ -34,14 +34,14 @@ export default function AppNavbar() {
         <button
           onClick={handleLogout}
           title="Cerrar sesión"
-          className="flex items-center justify-center p-2 rounded"
-          style={{ color: '#41644A' }}
+          className="flex items-center justify-center p-2 rounded font-bold"
+          style={{ color: '#0D4715' }}
         >
-          <RiLogoutBoxRLine size={22} />
+          <RiLogoutBoxRLine size={24} />
         </button>
 
         <NavbarToggle
-          style={{ color: '#41644A' }}
+          style={{ color: '#0D4715' }}
         />
       </div>
 
