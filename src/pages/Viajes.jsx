@@ -23,6 +23,8 @@ export default function Viajes() {
   const [loading, setLoading] = useState(true);
   //fecha hoy
   const [fecha, setFecha] = useState(getToday());
+  const [fechaDesde, setFechaDesde] = useState("");
+  const [fechaHasta, setFechaHasta] = useState("");
   const [error, setError] = useState("");
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [users, setUsers] = useState([]);
@@ -30,6 +32,7 @@ export default function Viajes() {
   const [selectedUsuario, setSelectedUsuario] = useState("");
   const [selectedCliente, setSelectedCliente] = useState("");
   const [exportLoading, setExportLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const token = localStorage.getItem("token");
   const rol = localStorage.getItem("rol");
   const navigate = useNavigate();
@@ -55,7 +58,7 @@ export default function Viajes() {
 
   // asegurar auth
   useEffect(() => {
-    if (!token) navigate("/login");
+    if (!token) navigate("/inicio-sesion");
   }, [token, navigate]);
 
   // helper: formatear fechas para mostrar y para input[type=date]
@@ -103,15 +106,27 @@ export default function Viajes() {
   }, [rol]);
 
   // ajustar fetchList para usar filtros seleccionados
-  const fetchList = async () => {
-    setLoading(true);
+  const fetchList = async (isSearch = false) => {
+    if (isSearch) {
+      setSearchLoading(true);
+    } else {
+      setLoading(true);
+    }
     setError("");
     try {
       const token = localStorage.getItem("token");
       const params = new URLSearchParams();
-      params.set("fecha", fecha);
-      if (selectedUsuario) params.set("usuario_id", selectedUsuario);
-      if (selectedCliente) params.set("cliente_id", selectedCliente);
+      
+      if (rol === "admin") {
+        // Para admin: usar fechaDesde/fechaHasta si están disponibles
+        if (fechaDesde) params.set("fechaDesde", fechaDesde);
+        if (fechaHasta) params.set("fechaHasta", fechaHasta);
+        if (selectedUsuario) params.set("usuario_id", selectedUsuario);
+        if (selectedCliente) params.set("cliente_id", selectedCliente);
+      } else if (rol === "chofer") {
+        // Para chofer: usar fecha simple
+        if (fecha) params.set("fecha", fecha);
+      }
 
       let url;
 
@@ -131,7 +146,11 @@ export default function Viajes() {
       console.error(err);
       setError("Error al cargar los viajes.");
     } finally {
-      setLoading(false);
+      if (isSearch) {
+        setSearchLoading(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
@@ -144,8 +163,12 @@ export default function Viajes() {
       const token = localStorage.getItem("token");
       const params = new URLSearchParams();
       params.set("fecha", fecha);
-      if (selectedUsuario) params.set("usuario_id", selectedUsuario);
-      if (selectedCliente) params.set("cliente_id", selectedCliente);
+      if (rol === "admin") {
+        if (fechaDesde) params.set("fechaDesde", fechaDesde);
+        if (fechaHasta) params.set("fechaHasta", fechaHasta);
+        if (selectedUsuario) params.set("usuario_id", selectedUsuario);
+        if (selectedCliente) params.set("cliente_id", selectedCliente);
+      }
 
       const res = await fetch(`${import.meta.env.VITE_URL_API}/reportes/viajes?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -164,7 +187,7 @@ export default function Viajes() {
 
       const blob = await res.blob();
       // intentar obtener filename desde headers
-      let filename = `viajes_${fecha}.xlsx`;
+      let filename = `viajes_${rol === "admin" ? `${fechaDesde || "desde"}_${fechaHasta || "hasta"}` : fecha}.xlsx`;
       const disposition = res.headers.get("content-disposition") || "";
       const match = disposition.match(/filename\*=UTF-8''(.+)|filename="(.+)"|filename=(.+)/);
       if (match) {
@@ -190,7 +213,15 @@ export default function Viajes() {
   useEffect(() => {
     if (token) fetchList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, fecha, rol, selectedUsuario, selectedCliente]);
+  }, [token, rol]);
+
+  // Para chofer: recargar cuando cambia la fecha (incluyendo cuando se limpia)
+  useEffect(() => {
+    if (token && rol === "chofer") {
+      fetchList(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fecha, rol]);
 
   // Mostrar (modal) -> trae datos si no los tiene
   const handleView = async (id) => {
@@ -361,67 +392,125 @@ export default function Viajes() {
         <Alert color="warning">{error}</Alert>
       ) : (
         <>
-          <div className="mb-4 flex justify-between items-end">
+          <div className="mb-6">
+            {/* Filtros para ADMIN */}
             {rol === "admin" && (
-              <div className="flex gap-4 items-end ">
-                <div className="w-48">
-                  Chofer:
-                  <Label value="Usuario" />
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <Label value="Chofer" />
                     <select
-                      className="w-full rounded px-2 "
+                      className="w-full rounded px-2 py-2 bg-white border border-gray-300"
                       value={selectedUsuario}
                       onChange={(e) => setSelectedUsuario(e.target.value)}
                     >
-                    <option value="">Todos</option>
-                    {users.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.nombre}
-                      </option>
-                    ))}
-                  </select>
+                      <option value="">Selecciona Chofer</option>
+                      {users.map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <Label value="Cliente" />
+                    <select
+                      className="w-full rounded px-2 py-2 bg-white border border-gray-300"
+                      value={selectedCliente}
+                      onChange={(e) => setSelectedCliente(e.target.value)}
+                    >
+                      <option value="">Selecciona Cliente</option>
+                      {clients.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="fechaDesde" value="Desde" />
+                    <TextInput
+                      id="fechaDesde"
+                      type="date"
+                      value={fechaDesde}
+                      style={{ backgroundColor: '#ffffff', color: '#000000' }}
+                      onChange={(e) => setFechaDesde(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="fechaHasta" value="Hasta" />
+                    <TextInput
+                      id="fechaHasta"
+                      type="date"
+                      value={fechaHasta}
+                      style={{ backgroundColor: '#ffffff', color: '#000000' }}
+                      onChange={(e) => setFechaHasta(e.target.value)}
+                    />
+                  </div>
                 </div>
-                
-                <div className="w-48">
-                  Cliente:
-                  <Label value="Cliente"/>
-                  <select
-                    className="w-full rounded px-2 "
-                    value={selectedCliente}
-                    onChange={(e) => setSelectedCliente(e.target.value)}
+
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    onClick={() => fetchList(true)}
+                    style={{ backgroundColor: '#0D4715' }}
+                    disabled={searchLoading}
                   >
-                    <option value="">Todos</option>
-                    {clients.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.nombre}
-                      </option>
-                    ))}
-                  </select>
+                    {searchLoading ? "Buscando..." : "Buscar"}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSelectedUsuario("");
+                      setSelectedCliente("");
+                      setFechaDesde("");
+                      setFechaHasta("");
+                    }}
+                    color="gray"
+                  >
+                    Limpiar Filtros
+                  </Button>
                 </div>
               </div>
-            )}{rol === "chofer" && (
-              <Button size="md" color="green" onClick={handleCreate} style={{ backgroundColor: '#0D4715' }}>
-                Crear Viaje
-              </Button>
             )}
-            <div className="flex items-end ">
-              <div>
-                Fecha:
-                <Label htmlFor="fecha" value="Seleccionar fecha:" />
-                <TextInput 
-                id="fecha" 
-                type="date" 
-                value={fecha} 
-                style={{ backgroundColor: '#ffffff', color: '#000000' }}
-                onChange={(e) => setFecha(e.target.value)} 
-                onKeyDown={(e)=>{ 
-                  if(e.key === "Backspace") setFecha("");
-                }}
-                />
+
+            {/* Para CHOFER */}
+            {rol === "chofer" && (
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end justify-between">
+                <Button
+                  size="md"
+                  color="green"
+                  onClick={handleCreate}
+                  style={{ backgroundColor: '#0D4715' }}
+                >
+                  Crear Viaje
+                </Button>
+
+                <div className="flex flex-row gap-2 items-end">
+                  <div>
+                    <Label htmlFor="fecha" value="Fecha:" />
+                    <TextInput
+                      id="fecha"
+                      type="date"
+                      value={fecha}
+                      style={{ backgroundColor: '#ffffff', color: '#000000' }}
+                      onChange={(e) => setFecha(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Backspace") setFecha("");
+                      }}
+                    />
+                  </div>
+                  <Button
+                    onClick={() => setFecha("")}
+                    className="text-black-600"
+                    title="Limpiar fecha"
+                  >
+                    <FaRegCalendarTimes size={18} />
+                  </Button>
+                </div>
               </div>
-              <Button onClick={() => setFecha("")} className="text-black-600" title="Limpiar fecha">
-                <FaRegCalendarTimes size={18}/>
-              </Button>
-            </div>
+            )}
           </div>
           
 
