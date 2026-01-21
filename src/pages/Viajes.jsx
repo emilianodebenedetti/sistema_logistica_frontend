@@ -12,11 +12,11 @@ import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { PiMicrosoftExcelLogoLight } from "react-icons/pi";
 import { FaRegCalendarTimes } from "react-icons/fa";
 
- const getToday = () => {
-    const today = new Date();
-    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-    return today.toISOString().split("T")[0];
-  };
+const getToday = () => {
+  const today = new Date();
+  today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+  return today.toISOString().split("T")[0];
+};
 
 export default function Viajes() {
   const [viajes, setViajes] = useState([]);
@@ -34,7 +34,7 @@ export default function Viajes() {
   const rol = localStorage.getItem("rol");
   const navigate = useNavigate();
 
-  // modals & selected data
+  // modales & datoss seleccionados
   const [showViewModal, setShowViewModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -399,14 +399,11 @@ export default function Viajes() {
                 </div>
               </div>
             )}{rol === "chofer" && (
-              <Button size="md" color="green" onClick={handleCreate}>
+              <Button size="md" color="green" onClick={handleCreate} style={{ backgroundColor: '#0D4715' }}>
                 Crear Viaje
               </Button>
             )}
-            <div className="flex">
-              <Button onClick={() => setFecha("")} className="text-black-600 mr-2" title="Limpiar fecha">
-                <FaRegCalendarTimes size={22}/>
-              </Button>
+            <div className="flex items-end ">
               <div>
                 Fecha:
                 <Label htmlFor="fecha" value="Seleccionar fecha:" />
@@ -414,12 +411,16 @@ export default function Viajes() {
                 id="fecha" 
                 type="date" 
                 value={fecha} 
+                style={{ backgroundColor: '#ffffff', color: '#000000' }}
                 onChange={(e) => setFecha(e.target.value)} 
                 onKeyDown={(e)=>{ 
                   if(e.key === "Backspace") setFecha("");
                 }}
                 />
               </div>
+              <Button onClick={() => setFecha("")} className="text-black-600" title="Limpiar fecha">
+                <FaRegCalendarTimes size={18}/>
+              </Button>
             </div>
           </div>
           
@@ -540,31 +541,31 @@ export default function Viajes() {
         show={showFormModal}
         title={isEditing ? "Editar viaje" : "Crear viaje"}
         onClose={() => setShowFormModal(false)}
-        footer={
+        footer={/*  */
           <div className="flex gap-2 justify-end">
-            <Button type="submit" form="viaje-form" color="green" disabled={actionLoadingId === "form"}>
+            <Button type="submit" form="viaje-form" style={{ backgroundColor: '#0D4715' }} disabled={actionLoadingId === "form"}>
               {actionLoadingId === "form" ? "Guardando..." : "Guardar"}
             </Button>
-            <Button color="red" onClick={() => setShowFormModal(false)}>
+            <Button style={{ backgroundColor: '#7c1b1b' }} onClick={() => setShowFormModal(false)}>
               Cancelar
             </Button>
           </div>
         }
       >
-        <form id="viaje-form" onSubmit={handleSubmitForm}>
-          <div className="flex flex-col gap-3">
+        <form id="viaje-form" onSubmit={handleSubmitForm} >
+          <div className="flex flex-col gap-3" >
             <div>
               <Label htmlFor="n_orden" value="N° Orden" />
-              <TextInput id="n_orden" placeholder="N° Orden (8 digitos)" value={form.n_orden} onChange={(e) => setForm({ ...form, n_orden: e.target.value })} />
+              <TextInput  id="n_orden" placeholder="N° Orden (8 digitos)"  style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.n_orden} onChange={(e) => setForm({ ...form, n_orden: e.target.value })} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="origen" value="Origen" />
-                <TextInput id="origen" placeholder="Origen" value={form.origen} onChange={(e) => setForm({ ...form, origen: e.target.value })} />
+                <TextInput id="origen" placeholder="Origen" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.origen} onChange={(e) => setForm({ ...form, origen: e.target.value })} />
               </div>
               <div>
                 <Label htmlFor="destino" value="Destino" />
-                <TextInput id="destino" placeholder="Destino" value={form.destino} onChange={(e) => setForm({ ...form, destino: e.target.value })} />
+                <TextInput id="destino" placeholder="Destino" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.destino} onChange={(e) => setForm({ ...form, destino: e.target.value })} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -573,6 +574,7 @@ export default function Viajes() {
                 <TextInput
                   id="contenedor"
                   placeholder="Ej: ABCD1234567"
+                  style={{ backgroundColor: '#ffffff', color: "#000000" }}
                   value={form.contenedor}
                   onChange={(e) => setForm({ ...form, contenedor: String(e.target.value || "").toUpperCase() })}
                 />
@@ -580,16 +582,16 @@ export default function Viajes() {
               </div>
               <div>
                 <Label htmlFor="fechaField" value="Fecha" />
-                <TextInput id="fechaField" type="date" value={form.fecha} onChange={(e) => setForm({ ...form, fecha: e.target.value })} />
+                <TextInput id="fechaField" type="date" style={{ backgroundColor: '#ffffff', color: '#000000' }} value={form.fecha} onChange={(e) => setForm({ ...form, fecha: e.target.value })} />
               </div>
             </div>
             <div>
               <Label htmlFor="matricula" value="Matrícula" />
-              <TextInput id="matricula" placeholder="Matricula" value={form.matricula} onChange={(e) => setForm({ ...form, matricula: e.target.value })} />
+              <TextInput id="matricula" placeholder="Matricula" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.matricula} onChange={(e) => setForm({ ...form, matricula: e.target.value })} />
             </div>
             <div>
               <Label htmlFor="tipo_cont" value="Tipo Contenedor" />
-              <TextInput id="tipo_cont" placeholder="Tipo Contenedor" value={form.tipo_cont} onChange={(e) => setForm({ ...form, tipo_cont: e.target.value })} />
+              <TextInput id="tipo_cont" placeholder="Tipo Contenedor" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.tipo_cont} onChange={(e) => setForm({ ...form, tipo_cont: e.target.value })} />
             </div>
 
             <div className="flex items-center gap-2">
@@ -606,12 +608,12 @@ export default function Viajes() {
 
             <div>
               <Label htmlFor="cliente_nombre" value="Cliente (nombre)" />
-              <TextInput id="cliente_nombre" placeholder="Nombre del cliente" value={form.cliente_nombre} onChange={(e) => setForm({ ...form, cliente_nombre: e.target.value })} />
+              <TextInput id="cliente_nombre" placeholder="Nombre del cliente" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.cliente_nombre} onChange={(e) => setForm({ ...form, cliente_nombre: e.target.value })} />
             </div>
 
             <div>
               <Label htmlFor="observaciones" value="Observaciones" />
-              <Textarea id="observaciones" placeholder="Observaciones" value={form.observaciones} onChange={(e) => setForm({ ...form, observaciones: e.target.value })} />
+              <Textarea id="observaciones" placeholder="Observaciones" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.observaciones} onChange={(e) => setForm({ ...form, observaciones: e.target.value })} />
             </div>
           </div>
         </form>
