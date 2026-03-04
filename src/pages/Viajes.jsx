@@ -162,12 +162,15 @@ export default function Viajes() {
     try {
       const token = localStorage.getItem("token");
       const params = new URLSearchParams();
-      params.set("fecha", fecha);
+
       if (rol === "admin") {
         if (fechaDesde) params.set("fechaDesde", fechaDesde);
         if (fechaHasta) params.set("fechaHasta", fechaHasta);
         if (selectedUsuario) params.set("usuario_id", selectedUsuario);
         if (selectedCliente) params.set("cliente_id", selectedCliente);
+        // admin does not send single "fecha" unless specifically desired
+      } else {
+        params.set("fecha", fecha);
       }
 
       const res = await fetch(`${import.meta.env.VITE_URL_API}/reportes/viajes?${params.toString()}`, {
@@ -187,7 +190,13 @@ export default function Viajes() {
 
       const blob = await res.blob();
       // intentar obtener filename desde headers
-      let filename = `viajes_${rol === "admin" ? `${fechaDesde || "desde"}_${fechaHasta || "hasta"}` : fecha}.xlsx`;
+      let filename = `viajes`;
+      if (rol === "admin") {
+        filename += `_${fechaDesde || "desde"}_${fechaHasta || "hasta"}`;
+      } else {
+        filename += `_${fecha}`;
+      }
+      filename += ".xlsx";
       const disposition = res.headers.get("content-disposition") || "";
       const match = disposition.match(/filename\*=UTF-8''(.+)|filename="(.+)"|filename=(.+)/);
       if (match) {
