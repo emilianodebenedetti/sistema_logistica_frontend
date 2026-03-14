@@ -37,7 +37,7 @@ export default function Viajes() {
   const rol = localStorage.getItem("rol");
   const navigate = useNavigate();
 
-  // modales & datoss seleccionados
+  // modales & datos seleccionados
   const [showViewModal, setShowViewModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -53,8 +53,9 @@ export default function Viajes() {
     cargado: false,
     observaciones: "",
     cliente_nombre: "",
+    cliente_id: "",
   });
-
+  const [formErrors, setFormErrors] = useState({});
 
   // asegurar auth
   useEffect(() => {
@@ -86,24 +87,62 @@ export default function Viajes() {
     };
   };
 
-  // fetch users and clients for admin filters
+  // fetch users and clients - siempre cargar clientes, usuarios solo si admin
   useEffect(() => {
-    if (rol !== "admin") return;
-    const token = localStorage.getItem("token");
+    if (!token) return;
     const fetchLists = async () => {
       try {
-        const [uRes, cRes] = await Promise.all([
-          fetch(`${import.meta.env.VITE_URL_API}/usuarios`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${import.meta.env.VITE_URL_API}/clientes`, { headers: { Authorization: `Bearer ${token}` } }),
-        ]);
-        if (uRes.ok) setUsers(await uRes.json());
-        if (cRes.ok) setClients(await cRes.json());
+        const headers = { Authorization: `Bearer ${token}` };
+        
+        // Siempre cargar clientes
+        const cRes = await fetch(`${import.meta.env.VITE_URL_API}/clientes`, { headers });
+        if (cRes.ok) {
+          const clientesData = await cRes.json();
+          console.log("Clientes cargados:", clientesData);
+          setClients(clientesData);
+        } else {
+          console.error("Error al cargar clientes. Status:", cRes.status);
+        }
+
+        // Solo cargar usuarios si es admin
+        if (rol === "admin") {
+          const uRes = await fetch(`${import.meta.env.VITE_URL_API}/usuarios`, { headers });
+          if (uRes.ok) {
+            const usuariosData = await uRes.json();
+            console.log("Usuarios cargados:", usuariosData);
+            setUsers(usuariosData);
+          }
+        }
       } catch (err) {
-        console.error("Error cargando usuarios o clientes:", err);
+        console.error("Error cargando listas:", err);
       }
     };
     fetchLists();
-  }, [rol]);
+  }, [rol, token]);
+
+  // Validar formulario antes de enviar
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!/^\d{8}$/.test(String(form.n_orden || "").trim())) {
+      errors.n_orden = "N° Orden debe tener exactamente 8 dígitos.";
+    }
+    
+    if (!/^[A-Z]{4}\d{7}$/.test(String(form.contenedor || "").toUpperCase())) {
+      errors.contenedor = "Contenedor debe ser 4 letras + 7 dígitos (Ej: ABCD1234567).";
+    }
+    
+    if (!/^[A-Za-z]{3}\d{4}$/.test(String(form.matricula || "").replace(/\s+/g, ""))) {
+      errors.matricula = "Matrícula debe ser 3 letras + 4 números (Ej: ABC1234).";
+    }
+    
+    if (!form.cliente_id) {
+      errors.cliente_id = "Seleccione un cliente.";
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   // ajustar fetchList para usar filtros seleccionados
   const fetchList = async (isSearch = false) => {
@@ -154,7 +193,7 @@ export default function Viajes() {
     }
   };
 
-  // resuexportar ltados actuales a Excel
+  // reexportar resultados actuales a Excel
   const handleExport = async () => {
     if (!viajes || viajes.length === 0) return;
     setExportLoading(true);
@@ -269,7 +308,28 @@ export default function Viajes() {
       cargado: false,
       observaciones: "",
       cliente_nombre: "",
+      cliente_id: "",
     });
+    setFormErrors({});
+    
+    // Forzar carga de clientes si está vacío
+    if (clients.length === 0) {
+      const fetchClientes = async () => {
+        try {
+          const headers = { Authorization: `Bearer ${token}` };
+          const cRes = await fetch(`${import.meta.env.VITE_URL_API}/clientes`, { headers });
+          if (cRes.ok) {
+            const clientesData = await cRes.json();
+            console.log("Clientes cargados en Create:", clientesData);
+            setClients(clientesData);
+          }
+        } catch (err) {
+          console.error("Error cargando clientes en Create:", err);
+        }
+      };
+      fetchClientes();
+    }
+    
     setShowFormModal(true);
   };
 
@@ -277,6 +337,7 @@ export default function Viajes() {
   const handleEdit = async (id) => {
     setError("");
     setIsEditing(true);
+    setFormErrors({});
     try {
       const local = viajes.find((v) => v.id === id);
       const data = local ? local : await (await fetch(`${import.meta.env.VITE_URL_API}/viajes/${id}`, { headers: { Authorization: `Bearer ${token}` } })).json();
@@ -291,6 +352,7 @@ export default function Viajes() {
         cargado: !!data.cargado,
         observaciones: data.observaciones || "",
         cliente_nombre: data.cliente_nombre || "",
+        cliente_id: data.cliente_id || data.cliente?.id || "",
         id: data.id,
       });
       setShowFormModal(true);
@@ -300,21 +362,20 @@ export default function Viajes() {
     }
   };
 
-  // Enviar formulario (create or update)
+  // Enviar formulario (create or update) - CON VALIDACION
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setError("");
+    if (!validateForm()) return;
     setActionLoadingId("form");
     try {
       const method = isEditing ? "PUT" : "POST";
       const url = isEditing ? `${import.meta.env.VITE_URL_API}/viajes/${form.id}` : `${import.meta.env.VITE_URL_API}/viajes`;
       const payload = { ...form };
 
-      // always send cliente_nombre (remove cliente_id if present)
-      if (payload.cliente_nombre) {
+      // always send client_id si está disponible
+      if (payload.cliente_id === "" || payload.cliente_id == null) {
         delete payload.cliente_id;
-      } else {
-        if (payload.cliente_id === "" || payload.cliente_id == null) delete payload.cliente_id;
       }
 
       // sanitize contenedor: empty -> null, trim
@@ -392,9 +453,6 @@ export default function Viajes() {
     <div className="p-6">
       <div className="flex flex-row justify-between items-center mb-2">
         <h1 className="text-2xl font-bold text-white-800">Viajes</h1>
-        {/* <div className="flex items-center gap-2">
-         
-        </div> */}
       </div>
 
       {error ? (
@@ -634,12 +692,13 @@ export default function Viajes() {
           )}
         </div>
       </SimpleModal>
+
       {/* Modal Crear / Editar (SimpleModal) */}
       <SimpleModal
         show={showFormModal}
         title={isEditing ? "Editar viaje" : "Crear viaje"}
         onClose={() => setShowFormModal(false)}
-        footer={/*  */
+        footer={
           <div className="flex gap-2 justify-end">
             <Button type="submit" form="viaje-form" style={{ backgroundColor: '#0D4715' }} disabled={actionLoadingId === "form"}>
               {actionLoadingId === "form" ? "Guardando..." : "Guardar"}
@@ -650,22 +709,43 @@ export default function Viajes() {
           </div>
         }
       >
-        <form id="viaje-form" onSubmit={handleSubmitForm} >
-          <div className="flex flex-col gap-3" >
+        <form id="viaje-form" onSubmit={handleSubmitForm}>
+          <div className="flex flex-col gap-3">
             <div>
               <Label htmlFor="n_orden" value="N° Orden" />
-              <TextInput  id="n_orden" placeholder="N° Orden (8 digitos)"  style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.n_orden} onChange={(e) => setForm({ ...form, n_orden: e.target.value })} />
+              <TextInput
+                id="n_orden"
+                placeholder="N° Orden (8 digitos)"
+                style={{ backgroundColor: '#ffffff', color: "#000000" }}
+                value={form.n_orden}
+                onChange={(e) => setForm({ ...form, n_orden: e.target.value })}
+              />
+              {formErrors.n_orden && <p className="text-red-600 text-xs mt-1">{formErrors.n_orden}</p>}
             </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="origen" value="Origen" />
-                <TextInput id="origen" placeholder="Origen" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.origen} onChange={(e) => setForm({ ...form, origen: e.target.value })} />
+                <TextInput
+                  id="origen"
+                  placeholder="Origen"
+                  style={{ backgroundColor: '#ffffff', color: "#000000" }}
+                  value={form.origen}
+                  onChange={(e) => setForm({ ...form, origen: e.target.value })}
+                />
               </div>
               <div>
                 <Label htmlFor="destino" value="Destino" />
-                <TextInput id="destino" placeholder="Destino" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.destino} onChange={(e) => setForm({ ...form, destino: e.target.value })} />
+                <TextInput
+                  id="destino"
+                  placeholder="Destino"
+                  style={{ backgroundColor: '#ffffff', color: "#000000" }}
+                  value={form.destino}
+                  onChange={(e) => setForm({ ...form, destino: e.target.value })}
+                />
               </div>
             </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="contenedor" value="Contenedor" />
@@ -677,19 +757,41 @@ export default function Viajes() {
                   onChange={(e) => setForm({ ...form, contenedor: String(e.target.value || "").toUpperCase() })}
                 />
                 <div className="text-xs text-gray-500 mt-1">4 letras + 7 dígitos (p.e. ABCD1234567)</div>
+                {formErrors.contenedor && <p className="text-red-600 text-xs mt-1">{formErrors.contenedor}</p>}
               </div>
               <div>
                 <Label htmlFor="fechaField" value="Fecha" />
-                <TextInput id="fechaField" type="date" style={{ backgroundColor: '#ffffff', color: '#000000' }} value={form.fecha} onChange={(e) => setForm({ ...form, fecha: e.target.value })} />
+                <TextInput
+                  id="fechaField"
+                  type="date"
+                  style={{ backgroundColor: '#ffffff', color: '#000000' }}
+                  value={form.fecha}
+                  onChange={(e) => setForm({ ...form, fecha: e.target.value })}
+                />
               </div>
             </div>
+
             <div>
               <Label htmlFor="matricula" value="Matrícula" />
-              <TextInput id="matricula" placeholder="Matricula" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.matricula} onChange={(e) => setForm({ ...form, matricula: e.target.value })} />
+              <TextInput
+                id="matricula"
+                placeholder="Matricula"
+                style={{ backgroundColor: '#ffffff', color: "#000000" }}
+                value={form.matricula}
+                onChange={(e) => setForm({ ...form, matricula: e.target.value })}
+              />
+              {formErrors.matricula && <p className="text-red-600 text-xs mt-1">{formErrors.matricula}</p>}
             </div>
+
             <div>
               <Label htmlFor="tipo_cont" value="Tipo Contenedor" />
-              <TextInput id="tipo_cont" placeholder="Tipo Contenedor" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.tipo_cont} onChange={(e) => setForm({ ...form, tipo_cont: e.target.value })} />
+              <TextInput
+                id="tipo_cont"
+                placeholder="Tipo Contenedor"
+                style={{ backgroundColor: '#ffffff', color: "#000000" }}
+                value={form.tipo_cont}
+                onChange={(e) => setForm({ ...form, tipo_cont: e.target.value })}
+              />
             </div>
 
             <div className="flex items-center gap-2">
@@ -705,21 +807,41 @@ export default function Viajes() {
             </div>
 
             <div>
-              <Label htmlFor="cliente_nombre" value="Cliente (nombre)" />
-              <TextInput id="cliente_nombre" placeholder="Nombre del cliente" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.cliente_nombre} onChange={(e) => setForm({ ...form, cliente_nombre: e.target.value })} />
+              <Label htmlFor="cliente_id" value="Cliente " />
+              <select
+                id="cliente_id"
+                className="w-full rounded px-2 py-1"
+                style={{ backgroundColor: '#ffffff', color: "#000000" }}
+                value={form.cliente_id || ""}
+                onChange={(e) => setForm({ ...form, cliente_id: e.target.value ? Number(e.target.value) : "" })}
+              >
+                <option value="">Seleccionar cliente</option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
+              {formErrors.cliente_id && <p className="text-red-600 text-xs mt-1">{formErrors.cliente_id}</p>}
             </div>
 
             <div>
               <Label htmlFor="observaciones" value="Observaciones" />
-              <Textarea id="observaciones" placeholder="Observaciones" style={{ backgroundColor: '#ffffff', color: "#000000" }} value={form.observaciones} onChange={(e) => setForm({ ...form, observaciones: e.target.value })} />
+              <Textarea
+                id="observaciones"
+                placeholder="Observaciones"
+                style={{ backgroundColor: '#ffffff', color: "#000000" }}
+                value={form.observaciones}
+                onChange={(e) => setForm({ ...form, observaciones: e.target.value })}
+              />
             </div>
           </div>
         </form>
       </SimpleModal>
+
       {rol === "admin" && (
         <div className="flex justify-center mt-4">
           <Button
-          
             style={{ backgroundColor: "#0D4715" }}
             onClick={handleExport}
             disabled={exportLoading || !viajes || viajes.length === 0}
@@ -730,7 +852,6 @@ export default function Viajes() {
         </div>
       )}
     </div>
-    
   );
 }
            
