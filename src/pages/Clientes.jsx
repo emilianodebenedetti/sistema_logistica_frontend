@@ -9,7 +9,7 @@ export default function Clientes() {
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  const [form, setForm] = useState({ nombre: "", direccion: "", telefono: "" });
+  const [form, setForm] = useState({ nombre: "", email: ""});
 
   const token = localStorage.getItem("token");
 
@@ -37,7 +37,7 @@ export default function Clientes() {
   }, []);
 
   const handleCreateOpen = () => {
-    setForm({ nombre: "", direccion: "", telefono: "" });
+    setForm({ nombre: "", email: "" });
     setShowForm(true);
     setError("");
   };
@@ -93,7 +93,7 @@ export default function Clientes() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Clientes</h1>
         <div className="flex items-center gap-2">
-          <Button color="green" onClick={handleCreateOpen}>
+          <Button color="green" style={{ backgroundColor: '#0D4715' }} onClick={handleCreateOpen}>
             <FaPlus className="mr-2" /> Nuevo cliente
           </Button>
         </div>
@@ -106,8 +106,7 @@ export default function Clientes() {
           <thead className="text-xs uppercase text-gray-700 bg-gray-50">
             <tr>
               <th className="px-6 py-3">Nombre</th>
-              <th className="px-6 py-3">Dirección</th>
-              <th className="px-6 py-3">Teléfono</th>
+              <th className="px-6 py-3">Email</th>
               <th className="px-6 py-3">Acciones</th>
             </tr>
           </thead>
@@ -120,8 +119,7 @@ export default function Clientes() {
               clients.map(c => (
                 <tr key={c.id} className="bg-white">
                   <td className="px-6 py-3">{c.nombre}</td>
-                  <td className="px-6 py-3">{c.direccion}</td>
-                  <td className="px-6 py-3">{c.telefono}</td>
+                  <td className="px-6 py-3">{c.email}</td>
                   <td className="px-6 py-3">
                     <div className="flex gap-2">
                       <Button color="failure" size="sm" onClick={() => handleDelete(c.id)} disabled={actionLoading === c.id}>
@@ -147,20 +145,15 @@ export default function Clientes() {
             <form onSubmit={handleCreate} className="space-y-3">
               <div>
                 <Label htmlFor="nombre" value="Nombre" />
-                <TextInput id="nombre" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
+                <TextInput id="nombre"style={{ backgroundColor: '#ffffff', color: "#000000" }} placeholder="Nombre" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
               </div>
               <div>
-                <Label htmlFor="direccion" value="Dirección" />
-                <TextInput id="direccion" value={form.direccion} onChange={(e) => setForm({ ...form, direccion: e.target.value })} />
+                <Label htmlFor="email" value="Email" />
+                <TextInput id="email"style={{ backgroundColor: '#ffffff', color: "#000000" }} placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
               </div>
-              <div>
-                <Label htmlFor="telefono" value="Teléfono" />
-                <TextInput id="telefono" value={form.telefono} onChange={(e) => setForm({ ...form, telefono: e.target.value })} />
-              </div>
-
               <div className="flex justify-end gap-2">
                 <Button type="button" color="gray" onClick={() => setShowForm(false)}>Cancelar</Button>
-                <Button type="submit" color="green" disabled={actionLoading}>{actionLoading ? "Guardando..." : "Crear"}</Button>
+                <Button type="submit" style={{ backgroundColor: '#0D4715' }} disabled={actionLoading}>{actionLoading ? "Guardando..." : "Crear"}</Button>
               </div>
             </form>
           </div>
