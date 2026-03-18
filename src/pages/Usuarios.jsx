@@ -93,7 +93,8 @@ export default function Usuarios() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Usuarios</h1>
         <div className="flex items-center gap-2">
-          <Button color="green" onClick={handleCreateOpen}>
+          <Button color="green" onClick={handleCreateOpen} style={{ backgroundColor: "#0D4715" }}>
+
             <FaPlus className="mr-2" /> Nuevo usuario
           </Button>
         </div>
@@ -147,15 +148,15 @@ export default function Usuarios() {
             <form onSubmit={handleCreate} className="space-y-3">
               <div>
                 <Label htmlFor="nombre" value="Nombre" />
-                <TextInput id="nombre" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
+                <TextInput id="nombre" style={{ backgroundColor: '#ffffff', color: "#000000" }} placeholder="Nombre" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
               </div>
               <div>
                 <Label htmlFor="email" value="Email" />
-                <TextInput id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+                <TextInput id="email" style={{ backgroundColor: '#ffffff', color: "#000000" }} className="white" placeholder="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
               </div>
               <div>
                 <Label htmlFor="password" value="Contraseña" />
-                <TextInput id="password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
+                <TextInput id="password" style={{ backgroundColor: '#ffffff', color: "#000000" }} placeholder="Contraseña" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
               </div>
               <div>
                 <Label htmlFor="rol" value="Rol" />
@@ -168,7 +169,7 @@ export default function Usuarios() {
 
               <div className="flex justify-end gap-2">
                 <Button type="button" color="gray" onClick={() => setShowForm(false)}>Cancelar</Button>
-                <Button type="submit" color="green" disabled={actionLoading}>{actionLoading ? "Guardando..." : "Crear"}</Button>
+                <Button type="submit" style={{ backgroundColor: "#0D4715" }} disabled={actionLoading}>{actionLoading ? "Guardando..." : "Crear"}</Button>
               </div>
             </form>
           </div>
